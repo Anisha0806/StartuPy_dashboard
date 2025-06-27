@@ -1,7 +1,7 @@
 import openai
 import streamlit as st
 
-# ✅ Setup OpenRouter with openai>=1.0.0
+# ✅ Initialize OpenAI client with OpenRouter
 client = openai.OpenAI(
     api_key=st.secrets["OPENROUTER_API_KEY"],
     base_url="https://openrouter.ai/api/v1"
@@ -55,22 +55,13 @@ def build_prompt(user_query, selected_industry=None, selected_year=None, selecte
     ])
     return full_prompt
 
-# 💬 Call OpenRouter API
+# 💬 Ask the model
 def ask_ai_assistant(prompt_text):
     try:
         response = client.chat.completions.create(
             model="mistralai/mixtral-8x7b-instruct",
             messages=[
-                {
-                    "role": "system",
-                    "content": (
-                        "You are StartupGPT, a specialized startup advisor chatbot. "
-                        "You ONLY respond to questions related to startups, funding, roadmaps, business planning, investors, or startup locations. "
-                        "If the question is NOT startup-related (e.g., politics, celebrities, news, general knowledge), say: "
-                        "'I'm StartupGPT – I can only help with startup ideas, funding, roadmaps, and business planning. "
-                        "Please ask a question related to startups 🚀.'"
-                    )
-                },
+                {"role": "system", "content": "You are StartupGPT, a specialized startup advisor."},
                 {"role": "user", "content": prompt_text}
             ]
         )
@@ -78,7 +69,7 @@ def ask_ai_assistant(prompt_text):
     except Exception as e:
         return f"❌ Error: {e}"
 
-# 🔁 Test
+# 🔁 Test (optional)
 if __name__ == "__main__":
     question = "How do I raise funding for an EdTech startup in India?"
     prompt = build_prompt(
