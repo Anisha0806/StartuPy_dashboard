@@ -1,8 +1,11 @@
 import openai
 import os
+from dotenv import load_dotenv
+load_dotenv()
+api_key = os.getenv("OPENROUTER_API_KEY")
 
 # 🔑 Set OpenRouter API Key and base URL
-openai.api_key = "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"
+openai.api_key = api_key
 openai.api_base = "https://openrouter.ai/api/v1"
 
 # ✅ Helper: Check if query is startup-related
