@@ -1,6 +1,7 @@
 from openai import OpenAI
 import streamlit as st
 
+# ✅ Instantiate OpenAI client for OpenRouter
 client = OpenAI(
     api_key=st.secrets["OPENROUTER_API_KEY"],
     base_url="https://openrouter.ai/api/v1"
@@ -54,13 +55,14 @@ def build_prompt(user_query, selected_industry=None, selected_year=None, selecte
 
 def ask_ai_assistant(prompt_text):
     try:
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+        response = client.chat.completions.create(
+            model="mistralai/mixtral-8x7b-instruct",
             messages=[
                 {"role": "system", "content": "You are StartupGPT, a specialized startup advisor."},
                 {"role": "user", "content": prompt_text}
             ]
         )
-        return response.choices[0].message["content"]
+        return response.choices[0].message.content
     except Exception as e:
         return f"❌ Error: {e}"
+
