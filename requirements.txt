@@ -2,5 +2,5 @@ streamlit
 pandas
 plotly
 requests
-openai
+openai==0.28
 scikit-learn
