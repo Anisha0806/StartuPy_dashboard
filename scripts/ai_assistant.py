@@ -1,8 +1,10 @@
-import openai
+from openai import OpenAI
 import streamlit as st
 
-# ✅ Set OpenAI API key directly
-openai.api_key = st.secrets["OPENAI_API_KEY"]
+client = OpenAI(
+    api_key=st.secrets["OPENROUTER_API_KEY"],
+    base_url="https://openrouter.ai/api/v1"
+)
 
 def is_startup_related(query):
     keywords = [
