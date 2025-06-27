@@ -1,8 +1,8 @@
-import openai
+from openai import OpenAI
 import streamlit as st
 
-# ✅ Initialize OpenAI client with OpenRouter
-client = openai.OpenAI(
+# ✅ Correctly initialize client
+client = OpenAI(
     api_key=st.secrets["OPENROUTER_API_KEY"],
     base_url="https://openrouter.ai/api/v1"
 )
