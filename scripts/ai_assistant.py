@@ -1,12 +1,13 @@
 from openai import OpenAI
 import streamlit as st
 
+# ✅ Setup the OpenRouter client correctly
 client = OpenAI(
     api_key=st.secrets["OPENROUTER_API_KEY"],
-    base_url="https://openrouter.ai/api/v1"
+    base_url="https://openrouter.ai/v1"
 )
 
-# ✅ Helper: Check if query is startup-related
+# ✅ Check if question is startup-related
 def is_startup_related(query):
     keywords = [
         "startup", "launch", "funding", "investor", "pitch", "MVP",
@@ -15,7 +16,7 @@ def is_startup_related(query):
     ]
     return any(k in query.lower() for k in keywords)
 
-# ✅ Build contextual startup prompt
+# ✅ Build prompt based on filters and query
 def build_prompt(user_query, selected_industry=None, selected_year=None, selected_country=None):
     if not is_startup_related(user_query):
         return (
@@ -54,13 +55,22 @@ def build_prompt(user_query, selected_industry=None, selected_year=None, selecte
     ])
     return full_prompt
 
-# 💬 Ask the model
+# ✅ Ask assistant using OpenRouter
 def ask_ai_assistant(prompt_text):
     try:
         response = client.chat.completions.create(
             model="mistralai/mixtral-8x7b-instruct",
             messages=[
-                {"role": "system", "content": "You are StartupGPT, a specialized startup advisor."},
+                {
+                    "role": "system",
+                    "content": (
+                        "You are StartupGPT, a specialized startup advisor chatbot. "
+                        "You ONLY respond to questions related to startups, funding, roadmaps, business planning, investors, or startup locations. "
+                        "If the question is NOT startup-related (e.g., politics, celebrities, news, general knowledge), say: "
+                        "'I'm StartupGPT – I can only help with startup ideas, funding, roadmaps, and business planning. "
+                        "Please ask a question related to startups 🚀.'"
+                    )
+                },
                 {"role": "user", "content": prompt_text}
             ]
         )
@@ -68,7 +78,7 @@ def ask_ai_assistant(prompt_text):
     except Exception as e:
         return f"❌ Error: {e}"
 
-# 🔁 Test (optional)
+# 🔁 Test directly
 if __name__ == "__main__":
     question = "How do I raise funding for an EdTech startup in India?"
     prompt = build_prompt(
