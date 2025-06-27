@@ -89,3 +89,4 @@ if __name__ == "__main__":
         selected_country="India"
     )
     print(ask_ai_assistant(prompt))
+
