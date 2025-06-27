@@ -66,3 +66,8 @@ def ask_ai_assistant(prompt_text):
     except Exception as e:
         return f"❌ Error: {e}"
 
+# ▶⃣ Optional direct test (won't run on Streamlit Cloud)
+if __name__ == "__main__":
+    q = "How to raise seed funding for a tech startup in India?"
+    p = build_prompt(q, selected_industry="Tech", selected_year=2024, selected_country="India")
+    print(ask_ai_assistant(p))
