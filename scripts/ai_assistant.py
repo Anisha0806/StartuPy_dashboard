@@ -1,10 +1,11 @@
 import openai
-import os
 import streamlit as st
-api_key = st.secrets["OPENROUTER_API_KEY"]
-# 🔑 Set OpenRouter API Key and base URL
-openai.api_key = api_key
-openai.api_base = "https://openrouter.ai/api/v1"
+
+# ✅ Setup OpenRouter with openai>=1.0.0
+client = openai.OpenAI(
+    api_key=st.secrets["OPENROUTER_API_KEY"],
+    base_url="https://openrouter.ai/api/v1"
+)
 
 # ✅ Helper: Check if query is startup-related
 def is_startup_related(query):
@@ -17,7 +18,6 @@ def is_startup_related(query):
 
 # ✅ Build contextual startup prompt
 def build_prompt(user_query, selected_industry=None, selected_year=None, selected_country=None):
-    # If non-startup query → polite redirection
     if not is_startup_related(user_query):
         return (
             "You are StartupGPT, a specialized assistant. If the user question is not about startups, funding, ideas, "
@@ -27,7 +27,6 @@ def build_prompt(user_query, selected_industry=None, selected_year=None, selecte
             f"User asked: {user_query}"
         )
 
-    # Context from filters
     context = []
     if selected_industry and selected_industry.lower() in user_query.lower():
         context.append(f"• Industry: {selected_industry}")
@@ -54,13 +53,12 @@ def build_prompt(user_query, selected_industry=None, selected_year=None, selecte
         "\n💡 Answer clearly and briefly. After answering, ask:\n"
         "'Would you like a roadmap, funding suggestions, or help identifying growth cities for this?'"
     ])
-
     return full_prompt
 
 # 💬 Call OpenRouter API
 def ask_ai_assistant(prompt_text):
     try:
-        response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
             model="mistralai/mixtral-8x7b-instruct",
             messages=[
                 {
@@ -76,11 +74,11 @@ def ask_ai_assistant(prompt_text):
                 {"role": "user", "content": prompt_text}
             ]
         )
-        return response["choices"][0]["message"]["content"]
+        return response.choices[0].message.content
     except Exception as e:
         return f"❌ Error: {e}"
 
-# 🔁 Test it directly
+# 🔁 Test
 if __name__ == "__main__":
     question = "How do I raise funding for an EdTech startup in India?"
     prompt = build_prompt(
@@ -90,4 +88,3 @@ if __name__ == "__main__":
         selected_country="India"
     )
     print(ask_ai_assistant(prompt))
-
